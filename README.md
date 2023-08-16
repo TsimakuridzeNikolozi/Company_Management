@@ -1,1 +1,1 @@
-This is a group project, which aims to create a Company Management Program or HR App as some call it. 
+This is a group project, which aims to create a full HR Application with all the needed functionalities. 
