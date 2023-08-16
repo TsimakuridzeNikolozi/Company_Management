@@ -1,0 +1,42 @@
+<nav>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <div id="navbar">
+    <div class="center-boxes">
+      <a href="profilePage" id="nav-profile">
+        <i class="material-icons">account_circle</i>
+        Profile
+      </a>
+      <a href="inbox" id="nav-inbox">
+        <i class="material-icons">inbox</i>
+        Inbox
+      </a>
+      <a href="outbox" id="nav-outbox">
+        <i class="material-icons">outbox</i>
+        outbox
+      </a>
+      <a href="treeServlet" id="nav-tree">
+        <i class="material-icons">account_tree</i>
+        Tree
+      </a>
+      <a href="search" id="nav-search">
+        <i class="material-icons">person_search</i>
+        Search
+      </a>
+      <a href="userBranchServlet" id="nav-myBranch">
+        <i class="material-icons">groups</i>
+        My Branch
+      </a>
+      <a href="attendanceControl" id="nav-supervisor">
+        <i class="material-icons">groups</i>
+        Table
+      </a>
+    </div>
+    <div id="profile-actions">
+      <a href="#" class="profile-link"><%= ((User)request.getSession().getAttribute("user")).getUserName()%></a>
+      <div class="profile-actions-dropdown-content">
+        <a href="profilePage">Edit Profile</a>
+        <a href="logout" onclick="localStorage.clear(); window.location.href = '/logout';">Log Out</a>
+      </div>
+    </div>
+  </div>
+</nav>

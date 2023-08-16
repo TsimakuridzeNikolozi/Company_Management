@@ -1,0 +1,70 @@
+#left-column {
+    flex: 1;
+    padding: 20px;
+    height: 80vh;
+}
+
+#right-column {
+    flex: 3.5;
+    padding: 20px;
+    background-color: #fafafa;
+    height: 80vh; /* Make the right column span from top to bottom */
+    overflow: auto; /* Add scrollbar if content exceeds viewport height */
+}
+.frame {
+    /* Adjust margin and width to make the frame extend all the way to the right */
+    margin: 0;
+    width: 100%;
+    border-radius: 0; /* Remove border-radius */
+}
+.search-filters {
+    margin-bottom: 20px;
+
+}
+.dropdown {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+/* Hide the default dropdown arrow on modern browsers */
+.dropdown-content::-ms-expand {
+    display: none;
+}
+
+/* Style the dropdown options */
+.dropdown-content option {
+    color: #333;
+}
+
+/* Style the dropdown arrow icon */
+.dropdown-content option::before {
+    content: '\25B8'; /* Unicode triangle icon pointing right */
+    padding-right: 5px;
+}
+
+/* Style the dropdown on hover and focus */
+.dropdown-content:hover,
+.dropdown-content:focus {
+    border-color: #4070f4;
+    background-color: #f0f3fe;
+    cursor: pointer;
+}
+.search-filters input {
+    display: block;
+    margin-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+th {
+    background-color: #f9f9f9;
+    text-align: left;
+}

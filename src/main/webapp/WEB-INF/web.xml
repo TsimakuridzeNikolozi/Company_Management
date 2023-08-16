@@ -1,0 +1,83 @@
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>OOP HR Login</display-name>
+
+  <servlet>
+    <servlet-name>login</servlet-name>
+    <servlet-class>controllers.LoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>login</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>createUser</servlet-name>
+    <servlet-class>controllers.CreateUserServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>createUser</servlet-name>
+    <url-pattern>/createUser</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>search</servlet-name>
+    <servlet-class>controllers.SearchServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>search</servlet-name>
+    <url-pattern>/search</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet>
+    <servlet-name>log-out</servlet-name>
+    <servlet-class>controllers.LogOutServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>log-out</servlet-name>
+    <url-pattern>/log-out</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>profile-page</servlet-name>
+    <servlet-class>controllers.ProfilePageServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>profile-page</servlet-name>
+    <url-pattern>/profilePage</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>inbox</servlet-name>
+    <servlet-class>controllers.InboxServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>inbox</servlet-name>
+    <url-pattern>/inbox</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet>
+    <servlet-name>outbox</servlet-name>
+    <servlet-class>controllers.OutboxServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>outbox</servlet-name>
+    <url-pattern>/outbox</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>file-upload</servlet-name>
+    <servlet-class>controllers.FileUploadServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>file-upload</servlet-name>
+    <url-pattern>/fileUpload</url-pattern>
+  </servlet-mapping>
+
+
+</web-app>

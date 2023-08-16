@@ -1,0 +1,55 @@
+* {
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#tree {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px;
+}
+
+#tree ul {
+    display: flex;
+    margin: 0;
+}
+
+#tree li {
+    display: inline-list-item;
+    list-style-type: none;
+    padding: 8px 16px;
+    background-color: #89b3ff;
+    border-radius: 6px; /* Round the edges to make them look more like buttons */
+    text-decoration: none; /* Remove underlines for links */
+    cursor: pointer; /* Show a pointer cursor on hover */
+    /* Add spacing between buttons */
+    margin: 0 10px 0 0;
+}
+
+/* Add a hover effect */
+#tree li:hover {
+    background-color: #6395ff; /* Change background color on hover */
+}
+
+h1 {
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+h1::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    height: 5px;
+    width: 35px;
+    border-radius: 12px;
+    background: #4070f4;
+}

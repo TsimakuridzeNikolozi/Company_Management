@@ -1,0 +1,63 @@
+/* Reset default margin and padding for all elements */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Set default font family and background color */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f0f0;
+}
+
+/* Styles for the main heading */
+h1 {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* Styles for the table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white; /* Set white background for the table */
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+}
+
+th {
+    background-color: #8ab3f5;
+}
+
+/* Add hovering effect */
+td[data-day]:hover {
+    background-color: #4887e8;
+}
+
+/* Styles for the popup */
+.popup {
+    display: none;
+    position: absolute;
+    background-color: #5e9eff;
+    z-index: 1;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    white-space: nowrap; /* Prevent text wrapping */
+    min-width: 150px; /* Minimum width for the popup */
+    max-width: 300px; /* Maximum width for the popup */
+}
+
+/* Add divider style for the third row (after the second row) */
+tr:nth-child(3) {
+    border-top: 5px solid #ddd; /* Divider line style */
+}
