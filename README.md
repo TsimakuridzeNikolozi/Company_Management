@@ -1,2 +1,2 @@
-# oop-final-project-deadlock
-oop-final-project-deadlock OOP HR application in building process
+#Company Management Program
+This is a group project
