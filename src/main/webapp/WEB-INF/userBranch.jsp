@@ -1,6 +1,9 @@
 <%@ page import="data.entity.Person" %>
 <%@ page import="java.util.List" %>
-<%@ page import="data.entity.User" %><%--
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="data.entity.User" %>
+<%@ page import="service.UserManagement" %><%--
   Created by IntelliJ IDEA.
   User: user
   Date: 19-Jul-23
@@ -13,7 +16,7 @@
     <script>
         var userID;
 
-        function showModal(person) {
+        function showModal(person, head) {
             // Set person information in the modal
             userID = person.id;
             document.getElementById('personName').innerText = person.firstName + ' ' + person.lastName;
@@ -24,7 +27,15 @@
             document.getElementById('personHireDate').innerText = person.hireDate;
             document.getElementById('personPosition').innerText = person.position;
             document.getElementById('personPhoneNumber').innerText = person.phoneNumber;
+            document.getElementById('personHead').value = head;
+            document.getElementById('id').value = userID;
 
+            // HR check
+            if (person.isHr === 'false') {
+                document.getElementById('personHead').readOnly = true;
+            } else {
+                document.getElementById('personHead').readOnly = false;
+            }
             // Show the modal
             document.getElementById('personModal').style.display = 'block';
         }
@@ -37,6 +48,7 @@
         function saveChanges() {
             var salary = document.getElementById('personSalary').value;
             var position = document.getElementById('position').value;
+            var head = document.getElementById('personHead').value;
 
             var xhr = new XMLHttpRequest();
             xhr.open('POST', 'userBranch', true);
@@ -50,7 +62,8 @@
 
             var params = 'salary=' + encodeURIComponent(salary) +
                 '&position=' + encodeURIComponent(position) +
-                '&id=' + encodeURIComponent(userID);
+                '&id=' + encodeURIComponent(userID) +
+                '&head=' + encodeURIComponent(head);
             console.log(params);
             xhr.send(params);
         }
@@ -133,7 +146,26 @@
                 background-color: #2c5ba3; /* Even darker green when button is clicked */
             }
 
+            .error {
+                position: absolute;
+                background-color: #f44336;
+                color: white;
+                padding: 10px;
+                border-radius: 4px;
+                width: 300px;
+                text-align: center;
+                margin: 20px auto 10px;
+                cursor: pointer;
+                top: 6%;
+                left: 50%;
+                transform: translateX(-50%);
+            }
 
+            .error p {
+                font-size: 16px;
+                font-weight: bold;
+                font-family: Arial, sans-serif;
+            }
         </style>
 
         <%@include file="/WEB-INF/HTML/navbar.html"%>
@@ -146,16 +178,16 @@
     <!-- The modal -->
     <div id="personModal" class="modal">
         <div class="modal-content">
-            <form id="personForm">
+            <form id="personForm" action="userBranchServlet" method="post">
                 <span class="close" onclick="closeModal()">&times;</span>
                 <h2 id="personName"></h2>
                 <p>ID: <span id="personId"></span></p>
                 <p>Birth Date: <span id="personBirthDate"></span></p>
                 <p>Gender: <span id="personGender"></span></p>
-                <p>Salary: <input type="text" id="personSalary" /></p>
+                <p>Salary: <input name="salary" type="text" id="personSalary" /></p>
                 <p>Hire Date: <span id="personHireDate"></span></p>
                 <p>Position: <span id="personPosition"></span>
-                    <select id= "position"class="dropdown-content" name="post_name">
+                    <select id= "position" class="dropdown-content" name="post_name">
                         <option disabled selected value="">Choose a position</option>
                         <%
                             List<String> options = (List<String>) request.getAttribute("options");
@@ -166,14 +198,11 @@
                     </select>
                 </p>
                 <p>Phone Number: <span id="personPhoneNumber"></span></p>
+                <p>Head: <input name="personHead" type="text" id="personHead"></p>
+                <input type="hidden" value="" id="id" name="id"/>
+                <input type="submit" value="Save"/>
             </form>
-            <button onclick="saveChanges()">Save</button>
         </div>
-        <% if (request.getAttribute("message") != null && !((String) request.getAttribute("message")).isEmpty()) { %>
-        <div class="response">
-            <%= request.getAttribute("message") %>
-        </div>
-        <% } %>
     </div>
 
 
@@ -183,28 +212,68 @@
                 <th>First name</th>
                 <th>Last name</th>
                 <th>Post</th>
+                <th>Head</th>
             </tr>
             </thead>
             <tbody>
-                <% for (Person person : (List<Person>) request.getAttribute("userBranch")) { %>
+                <% User user = (User) request.getSession().getAttribute("user");%>
+                <% Map<Person,String> searchResult = (Map<Person,String>) request.getAttribute("userBranch"); %>
+                <% if (searchResult != null) { %>
+                <% for (Map.Entry<Person, String> person : searchResult.entrySet()) { %>
                 <tr onclick="showModal({
-                        id: '<%=person.getId() %>',
-                        firstName: '<%=person.getFirstName() %>',
-                        lastName: '<%= person.getLastName() %>',
-                        idNumber: '<%= person.getIdNumber() %>',
-                        birthDate: '<%= person.getBirthDate() %>',
-                        gender: '<%= person.getGender() %>',
-                        salary: <%= person.getSalary() %>,
-                        hireDate: '<%= person.getHireDate() %>',
-                        position: '<%= person.getPost().getPostName() %>',
-                        phoneNumber: '<%= person.getPhoneNumber() %>'
-                        })">
-                        <td><%= person.getFirstName() %></td>
-                        <td><%= person.getLastName() %></td>
-                        <td><%= person.getPost().getPostName() %></td>
+                        id: '<%=person.getKey().getId() %>',
+                        firstName: '<%=person.getKey().getFirstName() %>',
+                        lastName: '<%= person.getKey().getLastName() %>',
+                        idNumber: '<%= person.getKey().getIdNumber() %>',
+                        birthDate: '<%= person.getKey().getBirthDate() %>',
+                        gender: '<%= person.getKey().getGender() %>',
+                        salary: <%= person.getKey().getSalary() %>,
+                        hireDate: '<%= person.getKey().getHireDate() %>',
+                        position: '<%= person.getKey().getPost().getPostName() %>',
+                        phoneNumber: '<%= person.getKey().getPhoneNumber() %>',
+                        isHr: '<%=UserManagement.isHr(user.getPerson())%>'
+                        }, '<%= person.getValue() %>')">
+                        <td><%= person.getKey().getFirstName() %></td>
+                        <td><%= person.getKey().getLastName() %></td>
+                        <td><%= person.getKey().getPost().getPostName() %></td>
+                        <td><%= person.getValue() %></td>
                     </tr>
-                <% } %>
+                    <% } %>
+                <% } else { %>
+                       <% } %>
             </tbody>
         </table>
+
+    <%
+        Boolean flag = (Boolean) request.getAttribute("flag");
+        Object errorMessageObject = request.getAttribute("message");
+        String errorMessage = null;
+        if (errorMessageObject != null)
+            errorMessage = errorMessageObject.toString();
+    %>
+    <!-- Show the response if available -->
+    <% if (errorMessage != null) { %>
+    <div class="error" id="error">
+        <script>
+            var error = document.querySelector('.error');
+            var flag = <%=flag%>;
+            if (flag) error.style.backgroundColor = "#4CAF50";
+            else error.style.backgroundColor = "#f44336";
+        </script>
+        <%=errorMessage%>
+    </div>
+    <% } %>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var errorMessage = document.querySelector('.error');
+            if (errorMessage) {
+                errorMessage.addEventListener('click', function() {
+                    errorMessage.style.display = 'none';
+                });
+            }
+        });
+    </script>
     </body>
 </html>

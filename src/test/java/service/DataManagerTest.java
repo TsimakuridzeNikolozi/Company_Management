@@ -122,7 +122,6 @@ public class DataManagerTest {
                 .id(id)
                 .messageType(MessageType.NOTIFICATION)
                 .text("text")
-                .permission(false)
                 .sender(mockUser)
                 .receiver(mockUser)
                 .build();

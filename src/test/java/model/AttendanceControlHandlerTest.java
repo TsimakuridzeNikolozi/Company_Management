@@ -35,16 +35,21 @@ public class AttendanceControlHandlerTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date startDate = sdf.parse("2023-08-05 10:00");
         Date endDate = sdf.parse("2023-08-05 18:00");
-        UUID personDayId = UUID.randomUUID();
+        UUID personId = UUID.fromString("060e3f96-302f-4f81-aff7-0fa1437dfb81");
         attendanceControlHandler.logPersonTime(LogTimeRequest.builder()
-                        .personDayId(personDayId)
-                        .personId(UUID.fromString("060e3f96-302f-4f81-aff7-0fa1437dfb81"))
+                        .personId(personId)
                         .accountingDate(startDate)
                         .startDate(startDate)
                         .endDate(endDate)
                 .build());
 
-        Assertions.assertEquals(dataManager.load(PersonDay.class).id(personDayId).getSingleResult().getStartMinutes(), DateUtils.getMinutesFromDate(startDate));
+        Assertions.assertEquals(dataManager.load(PersonDay.class)
+                .query("SELECT * FROM person_day" +
+                        " WHERE person_id = :personId" +
+                        " AND accounting_date = :date")
+                .parameter("personId", personId)
+                .parameter("date", startDate)
+                .getSingleResult().getStartMinutes(), DateUtils.getMinutesFromDate(startDate));
     }
 
     @SneakyThrows
@@ -55,7 +60,6 @@ public class AttendanceControlHandlerTest {
         Date endDate = sdf.parse("2023-08-05 18:00");
         UUID personDayId = UUID.fromString("262df93d-11ba-49c0-9529-9e5d86f069bb");
         attendanceControlHandler.logPersonTime(LogTimeRequest.builder()
-                .personDayId(personDayId)
                 .personId(UUID.fromString("060e3f96-302f-4f81-aff7-0fa1437dfb81"))
                 .accountingDate(startDate)
                 .startDate(startDate)
@@ -73,16 +77,20 @@ public class AttendanceControlHandlerTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date startDate = sdf.parse("2023-05-26 10:00");
         Date endDate = sdf.parse("2023-05-26 18:00");
-        UUID personDayId = UUID.randomUUID();
+        UUID personId = UUID.fromString("060e3f96-302f-4f81-aff7-0fa1437dfb81");
         attendanceControlHandler.logPersonTime(LogTimeRequest.builder()
-                .personDayId(personDayId)
-                .personId(UUID.fromString("060e3f96-302f-4f81-aff7-0fa1437dfb81"))
+                .personId(personId)
                 .accountingDate(startDate)
                 .startDate(startDate)
                 .endDate(endDate)
                 .build());
 
-        PersonDay singleResult = dataManager.load(PersonDay.class).id(personDayId).getSingleResult();
+        PersonDay singleResult = dataManager.load(PersonDay.class)
+                .query("SELECT * FROM person_day" +
+                " WHERE person_id = :personId" +
+                " AND accounting_date = :date")
+                .parameter("personId", personId)
+                .parameter("date", startDate).getSingleResult();
         Assertions.assertEquals(singleResult.getStartMinutes(), DateUtils.getMinutesFromDate(startDate));
         Assertions.assertEquals(singleResult.getHoliday(), true);
     }
@@ -93,9 +101,7 @@ public class AttendanceControlHandlerTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date startDate = sdf.parse("2023-08-04 10:00");
         Date endDate = sdf.parse("2023-08-05 18:00");
-        UUID personDayId = UUID.randomUUID();
         LogTimeResponse logTimeResponse = attendanceControlHandler.logPersonTime(LogTimeRequest.builder()
-                .personDayId(personDayId)
                 .personId(UUID.fromString("060e3f96-302f-4f81-aff7-0fa1437dfb81"))
                 .accountingDate(startDate)
                 .startDate(startDate)

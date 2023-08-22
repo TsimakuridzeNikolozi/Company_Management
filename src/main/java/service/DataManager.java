@@ -115,8 +115,8 @@ public class DataManager {
                 }
                 case "PersonDocument" -> {
                     PreparedStatement ps = statement.getConnection().prepareStatement(
-                            "INSERT INTO person_document (id, person_id, document_number, issue_date, expiration_date, document_type, file_content) VALUES(" +
-                                    "?, ?, ?, ?, ?, ?, ?)");
+                            "INSERT INTO person_document (id, person_id, document_number, issue_date, expiration_date, document_type, file_content, file_content_type) VALUES(" +
+                                    "?, ?, ?, ?, ?, ?, ?, ?)");
                     PersonDocument personDocument = (PersonDocument) entity;
                     ps.setString(1, personDocument.getId().toString());
                     ps.setString(2, personDocument.getPerson().getId().toString());
@@ -125,6 +125,7 @@ public class DataManager {
                     ps.setDate(5, new java.sql.Date(personDocument.getExpirationDate().getTime()));
                     ps.setString(6, String.valueOf(personDocument.getDocumentType()));
                     ps.setBinaryStream(7, new ByteArrayInputStream(personDocument.getFileContent()), personDocument.getFileContent().length);
+                    ps.setString(8, personDocument.getFileContentType());
                     ps.execute();
                 }
                 case "Post" -> {
@@ -225,25 +226,24 @@ public class DataManager {
                     queryBuilder.append("weekend = ").append(personDay.getWeekend() != null ? personDay.getWeekend() : "NULL");
                 }
                 case "PersonDocument" -> {
-                    queryBuilder.append("person_document ");
+                    PreparedStatement ps = statement.getConnection().prepareStatement(
+                            "UPDATE person_document SET person_id = ?, document_number = ?, issue_date = ?, expiration_date = ?, document_type = ?, file_content = ?, file_content_type = ? WHERE id = " + entity.getId().toString());
                     PersonDocument personDocument = (PersonDocument) entity;
-                    queryBuilder.append("SET ");
-                    queryBuilder.append("person_id = ").append(personDocument.getPerson() != null && personDocument.getPerson().getId() != null ? "'" + personDocument.getPerson().getId() + "'" : "NULL").append(", ");
-                    queryBuilder.append("document_number = ").append(personDocument.getDocumentNumber() != null ? "'" + personDocument.getDocumentNumber() + "'" : "NULL").append(", ");
-                    queryBuilder.append("issue_date = ").append(personDocument.getIssueDate() != null ? "'" + dateFormat.format(personDocument.getIssueDate()) + "'" : "NULL").append(", ");
-                    queryBuilder.append("expiration_date = ").append(personDocument.getExpirationDate() != null ? "'" + dateFormat.format(personDocument.getExpirationDate()) + "'" : "NULL").append(", ");
-                    queryBuilder.append("document_type = ").append(personDocument.getDocumentType() != null ? "'" + personDocument.getDocumentType() + "'" : "NULL").append(", ");
-
-                    StringBuilder fileContentBytesToString = new StringBuilder();
-                    for(int i = 0; i < personDocument.getFileContent().length; i++) fileContentBytesToString.append(personDocument.getFileContent()[i]);
-                    queryBuilder.append("file_content = ").append("'").append(fileContentBytesToString).append("'");
+                    ps.setString(1, personDocument.getPerson().getId().toString());
+                    ps.setString(2, personDocument.getDocumentNumber());
+                    ps.setDate(3, new java.sql.Date(personDocument.getIssueDate().getTime()));
+                    ps.setDate(4, new java.sql.Date(personDocument.getExpirationDate().getTime()));
+                    ps.setString(5, String.valueOf(personDocument.getDocumentType()));
+                    ps.setBinaryStream(6, new ByteArrayInputStream(personDocument.getFileContent()), personDocument.getFileContent().length);
+                    ps.setString(7, personDocument.getFileContentType());
+                    ps.execute();
                 }
                 case "TreeNode" -> {
                     queryBuilder.append("tree_node ");
                     TreeNode treeNode = (TreeNode) entity;
                     queryBuilder.append("SET ");
                     queryBuilder.append("person_id = ").append(treeNode.getPerson() != null ? "'" + treeNode.getPerson().getId() + "'" : "NULL").append(", ");
-                    queryBuilder.append("tree_node_id = ").append(treeNode.getParentNode() != null && treeNode.getParentNode().getId() != null ? "'" + treeNode.getParentNode().getId() + "'" : "NULL");
+                    queryBuilder.append("parent_node = ").append(treeNode.getParentNode() != null && treeNode.getParentNode().getId() != null ? "'" + treeNode.getParentNode().getId() + "'" : "NULL");
                 }
                 case "User" -> {
                     queryBuilder.append("user ");
@@ -267,9 +267,11 @@ public class DataManager {
                 default ->
                         throw new IllegalArgumentException("Unsupported entity type: " + entity.getClass().getSimpleName());
             }
-            queryBuilder.append(" WHERE id = '").append(entity.getId()).append("';");
-            statement.executeUpdate(queryBuilder.toString());
 
+            if (!entity.getClass().getSimpleName().equals("PersonDocument")) {
+                queryBuilder.append(" WHERE id = '").append(entity.getId()).append("';");
+                statement.executeUpdate(queryBuilder.toString());
+            }
         } catch (Exception e) {
             throw new RuntimeException(e.getLocalizedMessage());
         }
@@ -455,6 +457,7 @@ public class DataManager {
                                 .expirationDate(resultSet.getDate("expiration_date"))
                                 .documentType(DocumentType.parseString(resultSet.getString("document_type")))
                                 .fileContent((resultSet.getBinaryStream("file_content")).readAllBytes())
+                                .fileContentType(resultSet.getString("file_content_type"))
                                 .build();
 
                         UUID personId = UUID.fromString(resultSet.getString("person_id"));

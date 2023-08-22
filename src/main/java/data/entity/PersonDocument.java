@@ -20,4 +20,5 @@ public class PersonDocument extends BaseEntity {
 
     @Lob
     private byte[] fileContent;
+    private String fileContentType;
 }

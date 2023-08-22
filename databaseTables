@@ -1,0 +1,97 @@
+CREATE TABLE `message` (
+  `id` char(36) NOT NULL,
+  `subject` varchar(100) DEFAULT NULL,
+  `text` varchar(500) DEFAULT NULL,
+  `sender_id` char(36) NOT NULL,
+  `receiver_id` char(36) NOT NULL,
+  `message_type` enum('PERMIT','WARNING','NOTIFICATION') NOT NULL,
+  `timestamp` timestamp NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `receiver_id` (`receiver_id`),
+  KEY `sender_id` (`sender_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `person` (
+  `id` char(36) NOT NULL,
+  `first_name` varchar(30) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `id_number` varchar(30) DEFAULT NULL,
+  `birth_date` date DEFAULT NULL,
+  `gender` enum('MALE','FEMALE') DEFAULT NULL,
+  `salary` decimal(9,0) DEFAULT NULL,
+  `hire_date` date DEFAULT NULL,
+  `post_id` char(36) NOT NULL,
+  `phone_number` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_number` (`id_number`),
+  KEY `post_id` (`post_id`),
+  CONSTRAINT `person_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `person_day` (
+  `id` char(36) NOT NULL,
+  `person_id` char(36) NOT NULL,
+  `accounting_date` date NOT NULL,
+  `start_minutes` bigint DEFAULT NULL,
+  `end_minutes` bigint DEFAULT NULL,
+  `holiday` tinyint(1) DEFAULT NULL,
+  `weekend` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `person_id` (`person_id`),
+  CONSTRAINT `person_day_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `person_document` (
+  `id` char(36) NOT NULL,
+  `person_id` char(36) NOT NULL,
+  `document_number` varchar(30) NOT NULL,
+  `issue_date` date DEFAULT NULL,
+  `expiration_date` date DEFAULT NULL,
+  `document_type` enum('ID','PASSPORT','LICENSE','CONTRACT') NOT NULL,
+  `file_content` mediumblob,
+  `file_content_type` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `person_id` (`person_id`),
+  CONSTRAINT `person_document_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `post` (
+  `id` char(36) NOT NULL,
+  `post_name` varchar(30) NOT NULL,
+  `post_description` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `tree_node` (
+  `id` char(36) NOT NULL,
+  `person_id` char(36) NOT NULL,
+  `parent_node` char(36) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `person_id` (`person_id`),
+  CONSTRAINT `tree_node_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `user` (
+  `id` char(36) NOT NULL,
+  `username` varchar(30) NOT NULL,
+  `password` varchar(300) NOT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `person_id` char(36) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `person_id` (`person_id`),
+  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `work_time_template` (
+  `id` char(36) NOT NULL,
+  `direction` enum('IN','OUT') NOT NULL,
+  `is_controlled` tinyint(1) DEFAULT NULL,
+  `event_minutes` decimal(19,0) DEFAULT NULL,
+  `type_name` varchar(30) NOT NULL,
+  `person_id` char(36) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `person_id` (`person_id`),
+  CONSTRAINT `work_time_template_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+

@@ -17,6 +17,16 @@ h1 {
     margin: 20px 0;
 }
 
+h1::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+    width: 28px;
+    border-radius: 12px;
+    background: #4070f4;
+}
+
 /* Styles for the table */
 table {
     width: 100%;
@@ -60,4 +70,22 @@ td[data-day]:hover {
 /* Add divider style for the third row (after the second row) */
 tr:nth-child(3) {
     border-top: 5px solid #ddd; /* Divider line style */
+}
+
+/* Close Button */
+.popup-close {
+    display: block;
+    color: #aaaaaa;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    height: 20px;
+    margin-bottom: 4px;
+}
+
+.popup-close:hover,
+.popup-close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }

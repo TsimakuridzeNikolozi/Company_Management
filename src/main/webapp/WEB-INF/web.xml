@@ -78,6 +78,4 @@
     <servlet-name>file-upload</servlet-name>
     <url-pattern>/fileUpload</url-pattern>
   </servlet-mapping>
-
-
 </web-app>

@@ -13,7 +13,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class LogTimeRequest {
-    private UUID personDayId;
     private UUID personId;
     private Date accountingDate;
     private Date startDate;

@@ -17,4 +17,6 @@ public class PersonDayDTO {
     private Date accountingDate;
     private Date startTime;
     private Date endTime;
+    private Boolean weekend;
+    private Boolean holiday;
 }

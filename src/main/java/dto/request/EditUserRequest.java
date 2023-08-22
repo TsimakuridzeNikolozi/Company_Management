@@ -7,13 +7,16 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @AllArgsConstructor
 @SuperBuilder
 @Getter
 @Setter
 public class EditUserRequest {
-    public String personId;
-    public String salary;
-    public String postName;
+    private UUID personId;
+    private String salary;
+    private String postName;
+    private String headUsername;
+    private Boolean isHr;
 }

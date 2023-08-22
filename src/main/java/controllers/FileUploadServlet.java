@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -31,6 +32,11 @@ public class FileUploadServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User activeUser = (User) request.getSession().getAttribute("user");
+        request.getSession().setAttribute("user", activeUser);
+        if (request.getParameter("personIdForDocument") != null) {
+            UUID personId = UUID.fromString(request.getParameter("personIdForDocument"));
+            request.setAttribute("personIdForDocument", personId);
+        }
         request.getRequestDispatcher("/WEB-INF/fileUpload.jsp").forward(request, response);
     }
 
@@ -39,25 +45,31 @@ public class FileUploadServlet extends HttpServlet {
             throws ServletException, IOException {
 
         User user = (User)request.getSession().getAttribute("user");
+        UUID personId = user.getPerson().getId();
+        if (request.getParameter("personIdForDocument") != null) {
+            personId = UUID.fromString(request.getParameter("personIdForDocument"));
+        }
 
-        String documentNumber = (String) request.getParameter("documentNumber");
+        String documentNumber = request.getParameter("documentNumber");
         DocumentType documentType = DocumentType.parseString(request.getParameter("documentType"));
 
         Date issueDate = Date.valueOf(request.getParameter("issueDate"));
         Date expirationDate = Date.valueOf(request.getParameter("expirationDate"));
 
         Part filePart = request.getPart("file");
+        String fileContentType = filePart.getContentType();
         InputStream fileContent = filePart.getInputStream();
 
         FileUploadHandler fileUploadServlet = new FileUploadHandler(new DataManager());
         SaveFileResponse saveFileResponse = fileUploadServlet.saveFile(
                 SaveFileRequest.builder()
-                        .personId(user.getPerson().getId())
+                        .personId(personId)
                         .documentNumber(documentNumber)
                         .documentType(documentType)
                         .issueDate(issueDate)
                         .expirationDate(expirationDate)
                         .fileContent(fileContent)
+                        .fileContentType(fileContentType)
                         .build()
         );
 

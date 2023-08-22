@@ -69,18 +69,22 @@ public class AttendanceControlServlet extends HttpServlet {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = dateFormat.parse(dayDate);
 
+        SimpleDateFormat hmmFormat = new SimpleDateFormat("HH:mm");
+        Date start = hmmFormat.parse(startTime);
+        Date end = hmmFormat.parse(endTime);
+
         LogTimeRequest logTimeRequest = LogTimeRequest.builder()
                 .personId(UUID.fromString(personId))
                 .accountingDate(date)
-//                .startDate(startTime)
-//                .endDate(endTime)
+                .startDate(start)
+                .endDate(end)
                 .build();
         AttendanceControlHandler attendanceControlHandler = new AttendanceControlHandler(dataManager);
         LogTimeResponse logTimeResponse = attendanceControlHandler.logPersonTime(logTimeRequest);
-        request.setAttribute("message", (String) logTimeResponse.getError());
+        request.setAttribute("message", logTimeResponse.getError());
 
 
-        request.getRequestDispatcher("/WEB-INF/attendanceControl.jsp").forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/attendanceControl");
     }
 
 }

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.ActiveUser" %>
 <%@ page import="data.entity.User" %>
+<%@ page import="service.UserManagement" %>
 <%
     ActiveUser activeUser = new ActiveUser(request);
 %>
@@ -10,6 +11,7 @@
     <style>
         <%@include file="/WEB-INF/css/navbar.css"%>
         <%@include file="/WEB-INF/css/profilePage.css"%>
+        <%@include file="/WEB-INF/css/redirect-button.css"%>
     </style>
 </head>
 <body>
@@ -81,6 +83,12 @@
         </ul>
         <input type="submit" id="saveButton" value="Save">
     </form>
+
+    <% if (UserManagement.isHr(((User)request.getSession().getAttribute("user")).getPerson())) {%>
+    <a class="redirect-button" type="button" href="HRControl">
+        <i class="material-icons">contacts</i> HR Page
+    </a>
+    <% } %>
 </div>
 
 <!-- Show the success message if available -->

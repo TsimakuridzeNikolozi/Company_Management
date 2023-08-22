@@ -25,10 +25,10 @@ public class AttendanceControlHandler {
             Date startDate = logTimeRequest.getStartDate();
             Date endDate = logTimeRequest.getEndDate();
 
+            if (startDate.after(endDate)) return formResponse(false, "Start date cant be before end date");
             if (DateUtils.calculateHoursBetweenDates(startDate, endDate) > 24) return formResponse(false, "Its impossible to work more than 24 hours");
 
-            logTime(logTimeRequest.getPersonDayId(),
-                    logTimeRequest.getPersonId(),
+            logTime(logTimeRequest.getPersonId(),
                     accountingDate,
                     DateUtils.getMinutesFromDate(startDate),
                     DateUtils.getMinutesFromDate(endDate),
@@ -41,9 +41,10 @@ public class AttendanceControlHandler {
         }
     }
 
-    private void logTime(UUID personDayId, UUID personId, Date accountingDate, Long startMinutes, Long endMinutes, Boolean holiday, Boolean weekend) {
+    private void logTime(UUID personId, Date accountingDate, Long startMinutes, Long endMinutes, Boolean holiday, Boolean weekend) {
+        PersonDay existingPersonDay = getPersonDayForPerson(personId, accountingDate);
         PersonDay personDay = PersonDay.builder()
-                .id(personDayId == null ? UUID.randomUUID() : personDayId)
+                .id(existingPersonDay == null ? UUID.randomUUID() : existingPersonDay.getId())
                 .person(dataManager.load(Person.class).id(personId).getSingleResult())
                 .accountingDate(accountingDate)
                 .startMinutes(startMinutes)
@@ -60,5 +61,19 @@ public class AttendanceControlHandler {
                 .success(success)
                 .error(error)
                 .build();
+    }
+
+    private PersonDay getPersonDayForPerson(UUID personId, Date date) {
+        try {
+            return dataManager.load(PersonDay.class)
+                    .query("SELECT * FROM person_day" +
+                            " WHERE person_id = :personId" +
+                            " AND accounting_date = :date")
+                    .parameter("personId", personId)
+                    .parameter("date", date)
+                    .getSingleResult();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getLocalizedMessage());
+        }
     }
 }

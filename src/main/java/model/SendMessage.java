@@ -2,17 +2,13 @@ package model;
 
 import data.entity.Message;
 import data.entity.Person;
-import data.entity.ReverseTreeNode;
 import data.entity.User;
 import data.enums.MessageType;
 import dto.request.SendMessageRequest;
 import dto.response.SendMessageResponse;
 import service.DataManager;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -37,8 +33,8 @@ public class SendMessage {
      * @return SendMessageResponse object describing the result
      */
     public SendMessageResponse trySendingMessage(SendMessageRequest request) {
-        String subject = request.getSubject();
-        String text = request.getText();
+        String subject = request.getSubject().replaceAll("'", "''");
+        String text = request.getText().replaceAll("'", "''");
         User sender = request.getSender();
         String receiverEmail = request.getReceiverEmail();
         MessageType messageType = request.getMessageType();

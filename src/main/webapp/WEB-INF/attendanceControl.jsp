@@ -24,7 +24,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             var cells = document.querySelectorAll('td[data-day]');
             var popup = document.querySelector('.popup');
-            var popupCloseButton = document.querySelector('.popup-close');
 
             cells.forEach(function(cell) {
                 cell.addEventListener('click', function(event) {
@@ -33,34 +32,38 @@
                     var id = cell.parentElement.querySelector('td:last-child').textContent;
                     var dayDate = cell.getAttribute('data-day');
 
-
                     // Update the popup content with person name, day date, and times
                     var popupContent = `
                    <div class="popup-content">
-                        <h2>Update Schedule</h2>
+                        <span class="popup-close" id="popup-close" onclick="closePopup();">&times;</span>
+                        <h2 style="clear:both">Update Schedule</h2>
                         <p>Name: ${personName}</p>
                         <p>Day Date: ${dayDate}</p>
                         <label for="startTime" class="popup-input">Start Time: <input type="time" name="startTime" id="startTime" step="60" required></label><br>
                         <label for="endTime" class="popup-input">End Time: <input type="time" name="endTime" id="endTime" step="60" required></label><br>
-                        <button class="popup-button" onclick="updateSchedule('${personName}', '${dayDate}', '${id}')">Update</button>
+                        <button class="popup-button" id="popup-button" onclick="updateSchedule('${personName}', '${dayDate}', '${id}');">Update</button>
                         <p id="errorMessage" style="color: red; display: none;">Times must be filled.</p>
                     </div>
                 `;
                     popup.innerHTML = popupContent;
 
-                    // Display the popup near the clicked cell
-                    var cellRect = cell.getBoundingClientRect();
-                    var cellBottomRightX = cellRect.left + cellRect.width;
-                    var cellBottomRightY = cellRect.top + cellRect.height;
-                    var popupWidth = popup.offsetWidth;
-                    var popupHeight = popup.offsetHeight;
-                    var offsetX = cellBottomRightX - popupWidth;
-                    var offsetY = cellBottomRightY;
+                    function positionPopup() {
+                        var cellRect = cell.getBoundingClientRect();
+                        var cellBottomRightX = cellRect.left;
+                        var cellBottomRightY = cellRect.top + cellRect.height;
+                        var popupWidth = popup.offsetWidth;
+                        var popupHeight = popup.offsetHeight;
+                        var offsetX = cellBottomRightX;
+                        var offsetY = cellBottomRightY;
 
-                    // Display the popup near the clicked cell
-                    popup.style.display = 'block';
-                    popup.style.left = offsetX + 'px';
-                    popup.style.top = offsetY + 'px';
+                        // Display the popup near the clicked cell
+                        popup.style.display = 'block';
+                        popup.style.left = offsetX + 'px';
+                        popup.style.top = offsetY + 'px';
+                    }
+
+                    // Use requestAnimationFrame to execute the positioning code
+                    window.requestAnimationFrame(positionPopup);
 
                     // Close the popup on "Esc" key press
                     document.addEventListener('keydown', function(event) {
@@ -70,18 +73,11 @@
                     });
                 });
             });
-
-            // Close the popup when the close button is clicked
-            popupCloseButton.addEventListener('click', function() {
-                closePopup();
-            });
-
-            function closePopup() {
-                popup.style.display = 'none';
-            }
         });
 
-
+        function closePopup() {
+            document.querySelector('.popup').style.display = 'none';
+        }
 
         function updateSchedule(personName, dayDate, id) {
             // Get the updated start time and end time from the input fields
@@ -112,6 +108,8 @@
                 xhr.send(params);
                 // Hide the error message if it was previously shown
                 errorMessageElement.style.display = 'none';
+
+                closePopup();
             } else {
                 // Show the error message
                 errorMessageElement.style.display = 'block';
@@ -130,41 +128,78 @@
             String personName = person.getPersonName();
             List<PersonDayDTO> personDayList = (List<PersonDayDTO>) request.getAttribute("dayList");
             UUID personId = person.getPersonId();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat hhmmFormat = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         %>
         <tr>
             <th>Name</th>
             <% for (PersonDayDTO p : personDayList) { %>
-            <%if(p!=null)%>
-            <th><%= p.getAccountingDate()%></th>
-            <%}%>
+            <% if (p != null && p.getAccountingDate() != null) { %>
+            <th><%= dateFormat.format(p.getAccountingDate()) %></th>
+            <% } %>
+            <% } %>
         </tr>
         <tr>
             <td><%=personName %></td>
             <% for (PersonDayDTO p : personDayList) { %>
-            <%if(p!=null)%>
-            <td data-day="<%= p.getAccountingDate() %>"><%= dateFormat.format(p.getStartTime())+" - "+dateFormat.format(p.getEndTime())%></td>
-            <%}%>
+            <% if (p != null && p.getStartTime() != null && p.getEndTime() != null) { %>
+            <td id="<%=p.getPersonDayId()%>" data-day="<%= p.getAccountingDate() %>"><%= hhmmFormat.format(p.getStartTime()) + " - " + hhmmFormat.format(p.getEndTime()) %></td>
+            <% } else { %>
+            <td id="<%=p.getPersonDayId()%>" data-day="<%= dateFormat.format(p.getAccountingDate()) %>"></td>
+            <% } %>
+            <% if (p.getWeekend()) {%>
+            <script>
+                document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#a9f468';
+                document.getElementById('<%=p.getPersonDayId()%>').onmouseenter = function () {document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#4bf457'}
+                document.getElementById('<%=p.getPersonDayId()%>').onmouseleave = function () {document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#a9f468'}
+            </script>
+            <% } %>
+            <% if (p.getHoliday()) {%>
+            <script>
+                document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#eff45a';
+                document.getElementById('<%=p.getPersonDayId()%>').onmouseenter = function () {document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#f4db00'}
+                document.getElementById('<%=p.getPersonDayId()%>').onmouseleave = function () {document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#eff45a'}
+            </script>
+            <% } %>
+            <% } %>
             <td style="display: none;"><%= personId%></td>
         </tr>
 
 
-       <%
-           Map<PersonDTO, List<PersonDayDTO>> map  = (Map<PersonDTO, List<PersonDayDTO>>) request.getAttribute("map");
-           for (java.util.Map.Entry<PersonDTO, List<PersonDayDTO>> entry : map.entrySet()) {
+        <%
+            Map<PersonDTO, List<PersonDayDTO>> map  = (Map<PersonDTO, List<PersonDayDTO>>) request.getAttribute("map");
+            for (java.util.Map.Entry<PersonDTO, List<PersonDayDTO>> entry : map.entrySet()) {
                 PersonDTO pers = entry.getKey();
                 personId = pers.getPersonId();
                 List<PersonDayDTO> days = entry.getValue();%>
-                <tr>
-                    <td><%=pers.getPersonName() %></td>
-                    <% for (PersonDayDTO p : days) { %>
-                    <%if(p!=null)%>
-                     <td data-day="<%= p.getAccountingDate() %>"><%= dateFormat.format(p.getStartTime())+" - "+dateFormat.format(p.getEndTime())%></td>
-                    <%}%>
-                    <td style="display: none;"><%= personId%></td>
-                </tr>
+        <tr>
+            <td><%=pers.getPersonName() %></td>
+            <% for (PersonDayDTO p : days) { %>
+            <% if (p != null && p.getStartTime() != null && p.getEndTime() != null) { %>
+            <td id="<%=p.getPersonDayId()%>" data-day="<%= p.getAccountingDate() %>"><%= hhmmFormat.format(p.getStartTime()) + " - " + hhmmFormat.format(p.getEndTime()) %></td>
+            <% } else { %>
+            <td id="<%=p.getPersonDayId()%>" data-day="<%=dateFormat.format(p.getAccountingDate()) %>"></td>
+            <% } %>
+            <% if (p.getWeekend()) {%>
+            <script>
+                document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#a9f468';
+                document.getElementById('<%=p.getPersonDayId()%>').onmouseenter = function () {document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#4bf457'}
+                document.getElementById('<%=p.getPersonDayId()%>').onmouseleave = function () {document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#a9f468'}
+            </script>
+            <% } %>
+            <% if (p.getHoliday()) {%>
+            <script>
+                document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#eff45a';
+                document.getElementById('<%=p.getPersonDayId()%>').onmouseenter = function () {document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#f4db00'}
+                document.getElementById('<%=p.getPersonDayId()%>').onmouseleave = function () {document.getElementById('<%=p.getPersonDayId()%>').style.backgroundColor = '#eff45a'}
+            </script>
+            <% } %>
+            <% } %>
 
-            <%}%>
+            <td style="display: none;"><%= personId%></td>
+        </tr>
+
+        <%}%>
 
     </table>
 </div>

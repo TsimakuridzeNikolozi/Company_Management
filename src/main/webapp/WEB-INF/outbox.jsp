@@ -11,7 +11,7 @@
     <style>
         <%@include file="/WEB-INF/css/navbar.css"%>
         <%@include file="/WEB-INF/css/table.css"%>
-        <%@include file="/WEB-INF/css/compose-mail-button.css"%>
+        <%@include file="/WEB-INF/css/redirect-button.css"%>
         <%@include file="/WEB-INF/css/modal.css"%>
         body {
             padding: 0;
@@ -28,7 +28,7 @@
     </script>
 </head>
 <body>
-<%@include file="/WEB-INF/HTML/modal.html"%>
+<%@include file="/WEB-INF/HTML/messageModal.html"%>
 <table>
     <thead>
     <tr>
@@ -45,11 +45,11 @@
     <% for (Message message : sentMessages) { %>
     <tr onclick="showModal({
             id: '<%= message.getId().toString()%>',
-            subject: '<%= message.getSubject()%>',
+            subject: '<%= message.getSubject().replaceAll("'", "\\" + "\\'")%>',
             type: '<%=message.getMessageType()%>',
             senderEmail: '<%= message.getSender().getEmail()%>',
             receiverEmail: '<%= message.getReceiver().getEmail()%>',
-            text: '<%= message.getText()%>',
+            text: '<%= message.getText().replaceAll("'", "\\" + "\\'")%>',
             timestamp: '<%= dateFormat.format(message.getTimestamp())%>',
             })">
         <td><%= message.getSubject() %></td>
@@ -61,7 +61,7 @@
     </tbody>
 </table>
 
-<a class="compose-mail-button" type="button" href="composeMailServlet">
+<a class="redirect-button" type="button" href="composeMailServlet">
     <i class="material-icons">edit</i> Compose Mail
 </a>
 </body>

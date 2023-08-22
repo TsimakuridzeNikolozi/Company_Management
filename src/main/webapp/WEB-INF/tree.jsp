@@ -1,4 +1,4 @@
-<%@ page import="data.entity.ReverseTreeNode" %>
+<%@ page import="model.ReverseTreeNode" %>
 <%@ page import="com.google.gson.Gson" %>
 <%@ page import="java.util.List" %>
 <%@ page import="data.entity.User" %>

@@ -21,4 +21,5 @@ public class SaveFileRequest {
     private Date expirationDate;
     private DocumentType documentType;
     private InputStream fileContent;
+    private String fileContentType;
 }

@@ -1,6 +1,6 @@
 package controllers;
 
-import data.entity.ReverseTreeNode;
+import model.ReverseTreeNode;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,9 +15,6 @@ public class TreeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<ReverseTreeNode> rootPeople = ReverseTreeNode.getRootPeople();
-        for(ReverseTreeNode node: rootPeople) {
-            System.out.println(node.getPerson().getFirstName());
-        }
         request.setAttribute("data", rootPeople);
         request.getRequestDispatcher("/WEB-INF/tree.jsp").forward(request, response);
     }

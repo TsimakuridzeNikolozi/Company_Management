@@ -1,6 +1,7 @@
 <%@ page import="data.entity.PersonDocument" %>
 <%@ page import="java.util.List" %>
 <%@ page import="data.enums.DocumentType" %>
+<%@ page import="data.entity.User" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -8,110 +9,16 @@
     <meta charset="UTF-8">
     <title>File Upload</title>
     <style>
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-
-        /* Style the box */
-        form {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: 25%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        /* Center the form elements */
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Style the form elements */
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        select,
-        input[type="file"] {
-            width: 200px;
-            padding: 8px;
-            -webkit-box-sizing:border-box;
-        }
-
-        input[type="submit"] {
-            background-color: #4070f4;
-            color: #fff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Helvetica', Arial, sans-serif;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #305bb5;
-        }
-
-        input[type="submit"]:active {
-            background-color: #2c5ba3;
-        }
-
-        .error {
-            background-color: #f44336;
-            color: white;
-            padding: 10px;
-            border-radius: 4px;
-            width: 300px;
-            text-align: center;
-            margin: 20px auto 10px;
-            cursor: pointer;
-        }
-
-        .error p {
-            font-size: 16px;
-            font-weight: bold;
-            font-family: Arial, sans-serif;
-        }
-
-        h1 {
-            font-weight: 600;
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        h1::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            height: 3px;
-            width: 28px;
-            border-radius: 12px;
-            background: #4070f4;
-        }
+        <%@include file="/WEB-INF/css/fileUpload.css"%>
+        <%@include file="/WEB-INF/css/navbar.css"%>
+        <%@include file="/WEB-INF/css/redirect-button.css"%>
     </style>
+
+    <%@include file="/WEB-INF/HTML/navbar.html"%>
+    <script>
+        var id = "nav-myDocuments";
+        <%@include file="/WEB-INF/javascript/navSelectItem.js"%>
+    </script>
 </head>
 <body>
     <form action="fileUploadServlet" method="post" enctype="multipart/form-data">
@@ -143,6 +50,9 @@
             Select a file to upload:
             <input type="file" name="file" id="file">
         </label>
+        <% if (request.getAttribute("personIdForDocument") != null) { %>
+            <input type="hidden" name="personIdForDocument" value="<%=request.getAttribute("personIdForDocument")%>">
+        <% } %>
         <input type="submit" value="Upload" name="submit">
     </form>
 

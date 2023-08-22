@@ -1,0 +1,19 @@
+<div id="emailModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h1>Message</h1>
+        <h2 id="subject"></h2>
+        <p>From: <span id="senderEmail"></span></p>
+        <p>To: <span id="receiverEmail"></span></p>
+        <p>At: <span id="timestamp"></span></p>
+        <span id="text"></span>
+        <form action="composeMailServlet" method="post" name="responseEmail" class="buttons">
+            <input type="hidden" id="formMessageId" name="formMessageId">
+            <input type="hidden" id="formSubject" name="formSubject">
+            <input type="hidden" id="formSenderEmail" name="formSenderEmail">
+            <input type="submit" name="response" id="approveButton" value="Approve">
+            <input type="submit" name="response" id="denyButton" value="Deny">
+            <input type="submit" name="response" id="understoodButton" value="Understood">
+        </form>
+    </div>
+</div>

@@ -10,6 +10,7 @@ import dto.response.TimeResponse;
 import service.DataManager;
 import service.DateUtils;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class TimeHandler {
@@ -94,8 +95,12 @@ public class TimeHandler {
 
     private PersonDayDTO getPersonDayDTO(PersonDay personDay, Date date) {
         if (personDay == null) {
+            LocalDate localDate = DateUtils.convertToLocalDate(date, false);
             return PersonDayDTO.builder()
+                    .personDayId(UUID.randomUUID())
                     .accountingDate(date)
+                    .weekend(DateUtils.isWeekend(localDate))
+                    .holiday(DateUtils.isHoliday(localDate))
                     .build();
         }
         Date accountingDate = personDay.getAccountingDate();
@@ -104,6 +109,8 @@ public class TimeHandler {
                 .accountingDate(accountingDate)
                 .startTime(DateUtils.adjustDate(accountingDate, personDay.getStartMinutes()))
                 .endTime(DateUtils.adjustDate(accountingDate, personDay.getEndMinutes()))
+                .weekend(personDay.getWeekend())
+                .holiday(personDay.getHoliday())
                 .build();
     }
 }

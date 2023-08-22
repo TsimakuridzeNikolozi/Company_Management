@@ -3,6 +3,7 @@ package model;
 import data.PasswordEncryptor;
 import data.entity.Person;
 import data.entity.Post;
+import data.entity.TreeNode;
 import data.entity.User;
 import dto.request.CreateUserRequest;
 import dto.response.CreateUserResponse;
@@ -52,11 +53,12 @@ public class CreateUser {
         Person person = createPerson(createUserRequest.getFirstName(), createUserRequest.getLastName(), post);
         String password = createUserRequest.getPassword();
         User user = createUser(userName, password, email, person);
-
+        TreeNode treeNode = createTreeNode(person);
 
         // Storing a new person and a new user
         dataManager.save(person);
         dataManager.save(user);
+        dataManager.save(treeNode);
 
         return buildCreateUserResponse(true, SUCCESS, user);
     }
@@ -170,6 +172,13 @@ public class CreateUser {
                 .flag(flag)
                 .message(message)
                 .user(user)
+                .build();
+    }
+
+    private TreeNode createTreeNode(Person person) {
+        return TreeNode.builder()
+                .id(UUID.randomUUID())
+                .person(person)
                 .build();
     }
 }
